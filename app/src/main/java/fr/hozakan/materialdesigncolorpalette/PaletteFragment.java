@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +17,7 @@ import java.util.List;
 import fr.hozakan.materialdesigncolorpalette.card.ColorCard;
 import fr.hozakan.materialdesigncolorpalette.card.ColorCardAdapter;
 import fr.hozakan.materialdesigncolorpalette.model.PaletteColor;
+import fr.hozakan.materialdesigncolorpalette.recycler.PaletteColorRecyclerAdapter;
 import fr.hozakan.materialdesigncolorpalette.services.PaletteColorService;
 import it.gmariotti.cardslib.library.view.CardListView;
 
@@ -25,6 +28,10 @@ public class PaletteFragment extends Fragment implements ColorCard.ColorCardCall
 
     private CardListView mClv;
     private PaletteColorService mService;
+
+    private RecyclerView mRecyclerView;
+    private RecyclerView.Adapter mAdapter;
+    private RecyclerView.LayoutManager mLayoutManager;
 
     private int mPrimaryColor;
 
@@ -42,15 +49,23 @@ public class PaletteFragment extends Fragment implements ColorCard.ColorCardCall
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_color_palette, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_color_palette2, container, false);
         return rootView;
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mClv = (CardListView) view.findViewById(R.id.palette_card_list);
-        mClv.setAdapter(new ColorCardAdapter(getActivity(), toCards(mService.getPaletteColors(mPrimaryColor))));
+//        mClv = (CardListView) view.findViewById(R.id.palette_card_list);
+//        mClv.setAdapter(new ColorCardAdapter(getActivity(), toCards(mService.getPaletteColors(mPrimaryColor))));
+
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.palette_card_recycler_view);
+
+        mRecyclerView.setHasFixedSize(true);
+        mLayoutManager = new LinearLayoutManager(getActivity());
+
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        mRecyclerView.setAdapter(new PaletteColorRecyclerAdapter(getActivity(), mService.getPaletteColors(mPrimaryColor)));
     }
 
     private List<ColorCard> toCards(List<PaletteColor> paletteColors) {
