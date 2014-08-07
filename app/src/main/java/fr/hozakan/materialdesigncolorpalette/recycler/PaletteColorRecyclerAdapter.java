@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.List;
@@ -38,9 +39,11 @@ public class PaletteColorRecyclerAdapter extends RecyclerView.Adapter<PaletteCol
         PaletteColor color = mDataset.get(i);
         if (color != null) {
 //            paletteColorViewHolder.mCardView.setBackgroundColor(color.getColorId());
+            paletteColorViewHolder.mRlPalette.setBackgroundColor(color.getColorId());
             paletteColorViewHolder.mTvColorName.setText(color.getNameId());
             paletteColorViewHolder.mTvColorId.setText(color.getColorId());
             paletteColorViewHolder.mTvColorHexa.setText(color.getHexaId());
+            System.out.println("mDataset = " + mDataset);
         }
     }
 
@@ -55,6 +58,7 @@ public class PaletteColorRecyclerAdapter extends RecyclerView.Adapter<PaletteCol
         private final TextView mTvColorName;
         public final TextView mTvColorId;
         public final TextView mTvColorHexa;
+        private final RelativeLayout mRlPalette;
 
         public PaletteColorViewHolder(View itemView) {
             super(itemView);
@@ -62,6 +66,7 @@ public class PaletteColorRecyclerAdapter extends RecyclerView.Adapter<PaletteCol
             mTvColorName = (TextView) mCardView.findViewById(R.id.info_color_name);
             mTvColorId = (TextView) mCardView.findViewById(R.id.info_color_id);
             mTvColorHexa = (TextView) mCardView.findViewById(R.id.info_color_hexa);
+            mRlPalette = (RelativeLayout) itemView.findViewById(R.id.cardview_rl);
         }
     }
 }
