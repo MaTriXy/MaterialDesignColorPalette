@@ -55,7 +55,6 @@ public class PaletteColorRecyclerAdapter extends RecyclerView.Adapter<PaletteCol
         if (color != null) {
             paletteColorViewHolder.mCardView.setBackgroundResource(color.getColorId());
             paletteColorViewHolder.mTvColorName.setText(color.getNameId());
-            paletteColorViewHolder.mTvColorId.setText(color.getColorId());
             paletteColorViewHolder.mTvColorHexa.setText(color.getHexaId());
             paletteColorViewHolder.mButtonPopupMenu.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -89,20 +88,16 @@ public class PaletteColorRecyclerAdapter extends RecyclerView.Adapter<PaletteCol
 
     public static class PaletteColorViewHolder extends  RecyclerView.ViewHolder {
 
-        private final CardView mCardView;
-        private final TextView mTvColorName;
-        public final TextView mTvColorId;
+        public final CardView mCardView;
+        public final TextView mTvColorName;
         public final TextView mTvColorHexa;
-        private final RelativeLayout mRlPalette;
-        private final ImageButton mButtonPopupMenu;
+        public final ImageButton mButtonPopupMenu;
 
         public PaletteColorViewHolder(View itemView) {
             super(itemView);
             mCardView = (CardView) itemView.findViewById(R.id.card_view);
             mTvColorName = (TextView) mCardView.findViewById(R.id.info_color_name);
-            mTvColorId = (TextView) mCardView.findViewById(R.id.info_color_id);
             mTvColorHexa = (TextView) mCardView.findViewById(R.id.info_color_hexa);
-            mRlPalette = (RelativeLayout) itemView.findViewById(R.id.cardview_rl);
             mButtonPopupMenu = (ImageButton) itemView.findViewById(R.id.palette_color_popup_menu);
         }
     }
