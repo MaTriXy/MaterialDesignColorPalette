@@ -11,12 +11,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import fr.hozakan.materialdesigncolorpalette.card.ColorCard;
 import fr.hozakan.materialdesigncolorpalette.card.ColorCardAdapter;
 import fr.hozakan.materialdesigncolorpalette.model.PaletteColor;
+import fr.hozakan.materialdesigncolorpalette.otto.event.ShareMenuClickedEvent;
 import fr.hozakan.materialdesigncolorpalette.recycler.PaletteColorRecyclerAdapter;
 import fr.hozakan.materialdesigncolorpalette.services.PaletteColorService;
 import it.gmariotti.cardslib.library.view.CardListView;
@@ -27,7 +33,12 @@ import it.gmariotti.cardslib.library.view.CardListView;
 public class PaletteFragment extends Fragment implements ColorCard.ColorCardCallback {
 
     private CardListView mClv;
-    private PaletteColorService mService;
+
+    @Inject
+    protected PaletteColorService mService;
+
+    @Inject
+    protected Bus mBus;
 
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
@@ -44,7 +55,14 @@ public class PaletteFragment extends Fragment implements ColorCard.ColorCardCall
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mService = new PaletteColorService(getActivity());
+
+        mBus.register(this);
+    }
+
+    @Override
+    public void onDestroy() {
+        mBus.unregister(this);
+        super.onDestroy();
     }
 
     @Override
@@ -65,7 +83,11 @@ public class PaletteFragment extends Fragment implements ColorCard.ColorCardCall
         mLayoutManager = new LinearLayoutManager(getActivity());
 
         mRecyclerView.setLayoutManager(mLayoutManager);
-        mRecyclerView.setAdapter(new PaletteColorRecyclerAdapter(getActivity(), mService.getPaletteColors(mPrimaryColor)));
+
+        PaletteColorRecyclerAdapter adapter = new PaletteColorRecyclerAdapter(mService.getPaletteColors(mPrimaryColor));
+        ((BaseApplication)getActivity().getApplication()).inject(adapter);
+        mRecyclerView.setAdapter(adapter);
+
     }
 
     private List<ColorCard> toCards(List<PaletteColor> paletteColors) {
@@ -85,13 +107,18 @@ public class PaletteFragment extends Fragment implements ColorCard.ColorCardCall
         Toast.makeText(getActivity(), "Color copied to clipboard", Toast.LENGTH_SHORT).show();
     }
 
+    @Subscribe
+    public void shareMenuClicked(ShareMenuClickedEvent event) {
+        final PaletteColor color = event.getColor();
+        copyColorToClipboard(color.getParentColorName(), color.getNameId(), color.getHexaId());
+    }
+
+
+
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        if (mService == null) {
-            mService = new PaletteColorService(getActivity());
-        }
-//        ((ColorPaletteActivity) activity).onSectionAttached(NavigationDrawerSections.getPaletteColorName(mPrimaryColor));
+        ((BaseApplication)activity.getApplication()).inject(this);
         List<PaletteColor> colors = mService.getPaletteColors(mPrimaryColor);
         if (!colors.isEmpty()) {
             ((ColorPaletteActivity) activity).onSectionAttached(activity.getResources().getString(mPrimaryColor), colors.get(0).getHexaId());
